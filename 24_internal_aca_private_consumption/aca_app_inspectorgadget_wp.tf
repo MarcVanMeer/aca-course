@@ -1,4 +1,4 @@
-resource "azurerm_container_app" "aca_app_inspectorgadget_wp_d4" {
+mcpresource "azurerm_container_app" "aca_app_inspectorgadget_wp_d4" {
   count = 50
 
   name                         = "aca-wp-d4-${count.index}"

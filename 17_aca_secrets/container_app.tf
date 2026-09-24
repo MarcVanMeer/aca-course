@@ -25,6 +25,10 @@ resource "azurerm_container_app" "aca_app" {
         name        = "MY_SECRET_01"
         secret_name = "my-secret-01"
       }
+      env {
+        name        = "MY_SECRET_02"
+        secret_name = "my-secret-02"
+      }
     }
   }
 
@@ -32,6 +36,12 @@ resource "azurerm_container_app" "aca_app" {
     name  = "my-secret-01"
     value = "My Secret Connection String value"
     # expect secret_ref to be added to azurerm provider
+  }
+
+  secret {
+    name                = "my-secret-02"
+    key_vault_secret_id = azurerm_key_vault_secret.secret_02.id
+    identity            = azurerm_user_assigned_identity.identity_aca.id
   }
 
   identity {
@@ -52,7 +62,7 @@ resource "azurerm_container_app" "aca_app" {
   }
 
   lifecycle {
-    ignore_changes = [ secret ]
+    ignore_changes = [secret]
   }
 }
 
@@ -60,34 +70,34 @@ output "app_url" {
   value = azurerm_container_app.aca_app.latest_revision_fqdn
 }
 
-resource "terraform_data" "add_secrets" {
-  count            = 1
-  triggers_replace = []
+# resource "terraform_data" "add_secrets" {
+#   count            = 1
+#   triggers_replace = []
 
-  lifecycle {
-    replace_triggered_by = [azurerm_container_app.aca_app]
-  }
+#   lifecycle {
+#     replace_triggered_by = [azurerm_container_app.aca_app]
+#   }
 
-  provisioner "local-exec" {
+#   provisioner "local-exec" {
 
-    # interpreter = [ "bash", "-c" ]
-    interpreter = ["PowerShell", "-Command"]
+#     # interpreter = [ "bash", "-c" ]
+#     interpreter = ["PowerShell", "-Command"]
 
-    command = <<-EOT
-    
-        az containerapp secret set `
-          --name ${azurerm_container_app.aca_app.name} `
-          --resource-group ${azurerm_resource_group.rg.name} `
-          --secrets my-secret-02=keyvaultref:${azurerm_key_vault_secret.secret_02.versionless_id},identityref:${azurerm_user_assigned_identity.identity_aca.id}
+#     command = <<-EOT
 
-          az containerapp update `
-          --name ${azurerm_container_app.aca_app.name} `
-          --resource-group ${azurerm_resource_group.rg.name} `
-          --set-env-vars "MY_SECRET_02=secretref:my-secret-02"
-         
-      EOT
-    when    = create
-  }
+#         az containerapp secret set `
+#           --name ${azurerm_container_app.aca_app.name} `
+#           --resource-group ${azurerm_resource_group.rg.name} `
+#           --secrets my-secret-02=keyvaultref:${azurerm_key_vault_secret.secret_02.versionless_id},identityref:${azurerm_user_assigned_identity.identity_aca.id}
 
-  depends_on = [azurerm_container_app.aca_app]
-}
+#           az containerapp update `
+#           --name ${azurerm_container_app.aca_app.name} `
+#           --resource-group ${azurerm_resource_group.rg.name} `
+#           --set-env-vars "MY_SECRET_02=secretref:my-secret-02"
+
+#       EOT
+#     when    = create
+#   }
+
+#   depends_on = [azurerm_container_app.aca_app]
+# }

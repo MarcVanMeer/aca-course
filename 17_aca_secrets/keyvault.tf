@@ -1,19 +1,19 @@
 resource "azurerm_key_vault" "keyvault" {
-  name                       = "kvaca12357911"
-  location                   = azurerm_resource_group.rg.location
-  resource_group_name        = azurerm_resource_group.rg.name
-  tenant_id                  = data.azurerm_client_config.current.tenant_id
-  sku_name                   = "standard"
-  soft_delete_retention_days = 7
-  enable_rbac_authorization  = true
-  purge_protection_enabled   = false
+  name                                         = "kvaca12357911"
+  location                                     = azurerm_resource_group.rg.location
+  resource_group_name                          = azurerm_resource_group.rg.name
+  tenant_id                                    = data.azurerm_client_config.current.tenant_id
+  sku_name                                     = "standard"
+  soft_delete_retention_days                   = 7
+  rbac_authorization_enabled = true
+  purge_protection_enabled                     = false
 }
 
 resource "azurerm_key_vault_secret" "secret_02" {
   name         = "my-secret-02"
   value        = "P@ssw0rd123!"
   key_vault_id = azurerm_key_vault.keyvault.id
-  depends_on = [ azurerm_role_assignment.role_keyvault_me ]
+  depends_on   = [azurerm_role_assignment.role_keyvault_me]
 }
 
 resource "azurerm_role_assignment" "role_keyvault_identity" {
