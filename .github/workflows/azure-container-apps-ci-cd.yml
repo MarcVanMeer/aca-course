@@ -1,10 +1,10 @@
 name: Build and deploy a container to an Azure Container Apps - ACA
 
 env:
-  IMAGE_NAME: houssemdellai/containerapps-album-api
-  CONTAINERAPPS_APP: album-backend-api
+  IMAGE_NAME: marcvanmeer/containerapps-album-api
+  CONTAINERAPPS_APP: album-backend21-api
   CONTAINERAPPS_ENVIRONMENT: aca-environment
-  RESOURCE_GROUP: rg-containerapps-github-actions
+  RESOURCE_GROUP: bdodt-d-rg-udemy-demo
 
 on:
   push:
